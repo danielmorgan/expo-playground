@@ -44,19 +44,21 @@ export function usePairing() {
   };
 
   useEffect(() => {
-    setLoading(true);
-  
     (async () => {
+      setLoading(true);
+    
       const { data, error } = await supabase
         .from("pairs")
         .select()
         .or(`slave_code.eq.${deviceCode},master_code.eq.${deviceCode}`)
         .single();
       
-      if (deviceCode === data.master_code) {
+      if (deviceCode === data?.master_code) {
         setCurrentPair(data.slave_code);
-      } else if (deviceCode === data.slave_code) {
+      } else if (deviceCode === data?.slave_code) {
         setCurrentPair(data.master_code);
+      } else {
+        setCurrentPair(null);
       }
 
       setLoading(false);

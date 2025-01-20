@@ -1,8 +1,9 @@
 // pair.tsx
 import { useDeviceCode } from "@/hooks/useDeviceCode";
 import { usePairing } from "@/hooks/usePairing";
-import { router, useNavigation } from "expo-router";
+import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
+import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -12,20 +13,20 @@ import {
   View,
 } from "react-native";
 
-export default function Pair() {
-  const navigation = useNavigation();
-  navigation.setOptions({
-    title: "Pairing",
-  });
-
+export default function Index() {
   const { code: remoteCode } = useLocalSearchParams<{ code: string }>();
+  const [inputCode, setInputCode] = useState<string>(remoteCode || "");
   const { deviceCode: localCode } = useDeviceCode();
-  const { initializePair, loading, error } = usePairing();
+  const { initializePair, error, loading } = usePairing();
+  const buttonDisabled = useMemo(
+    () => !inputCode || !localCode,
+    [inputCode, localCode]
+  );
 
   const handlePress = async () => {
-    if (remoteCode && localCode) {
-      await initializePair(remoteCode, localCode);
-      router.dismissTo("/");
+    if (inputCode && localCode) {
+      await initializePair(inputCode, localCode);
+      router.replace("/(paired)");
     }
   };
 
@@ -36,8 +37,9 @@ export default function Pair() {
       <View style={{ flexDirection: "row", marginTop: 8 }}>
         <TextInput
           style={styles.textInput}
-          value={remoteCode}
+          value={inputCode}
           spellCheck={false}
+          onChange={(e) => setInputCode(e.nativeEvent.text)}
         />
       </View>
 
@@ -45,10 +47,12 @@ export default function Pair() {
         <TouchableOpacity
           style={styles.button}
           onPress={handlePress}
-          disabled={loading}
+          disabled={buttonDisabled || loading}
         >
           {loading ? (
             <ActivityIndicator size="large" color="#000" />
+          ) : buttonDisabled ? (
+            <Text style={[{ color: "#ccc" }, styles.buttonText]}>Pair</Text>
           ) : (
             <Text style={styles.buttonText}>Pair</Text>
           )}

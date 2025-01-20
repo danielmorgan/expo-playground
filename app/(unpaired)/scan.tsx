@@ -7,14 +7,8 @@ import {
   useCodeScanner,
 } from "react-native-vision-camera";
 import * as Linking from "expo-linking";
-import { useNavigation } from "expo-router";
 
 export default function Scan() {
-  const navigation = useNavigation();
-  navigation.setOptions({
-    title: "Scan QR Code",
-  });
-
   const device = useCameraDevice("back");
   const { hasPermission, requestPermission } = useCameraPermission();
   const codeScanner = useCodeScanner({

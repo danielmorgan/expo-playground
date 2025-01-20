@@ -16,7 +16,7 @@ const generateCode = (): string => {
 
 export const useDeviceCode = () => {
   const [deviceCode, setDeviceCode] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
@@ -32,14 +32,14 @@ export const useDeviceCode = () => {
         }
 
         setDeviceCode(code);
-        setIsLoading(false);
+        setLoading(false);
       } catch (err) {
         setError(
           err instanceof Error
             ? err
             : new Error("Failed to initialize device code")
         );
-        setIsLoading(false);
+        setLoading(false);
       }
     };
 
@@ -48,7 +48,7 @@ export const useDeviceCode = () => {
 
   return {
     deviceCode,
-    isLoading,
+    loading,
     error,
   };
 };

@@ -1,4 +1,4 @@
-import { Link, useNavigation } from "expo-router";
+import { Link } from "expo-router";
 import {
   ActivityIndicator,
   Platform,
@@ -12,18 +12,13 @@ import { useDeviceCode } from "@/hooks/useDeviceCode";
 import { useMemo } from "react";
 
 export default function Unpaired() {
-  const navigation = useNavigation();
-  navigation.setOptions({
-    title: "Set up Love Nudge",
-  });
-
-  const { deviceCode, isLoading, error } = useDeviceCode();
+  const { deviceCode, loading, error } = useDeviceCode();
   const pairUrl = useMemo(
     () => `com.ruledan.lovenudge://pair?code=${deviceCode}`,
     [deviceCode]
   );
 
-  if (isLoading) {
+  if (loading) {
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" color="#0000ff" />

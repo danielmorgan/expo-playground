@@ -13,7 +13,7 @@ export default function Index({ prop }: IndexProps) {
         alignItems: "center",
       }}
     >
-      <ActivityIndicator size="large" color="#000" />
+      <ActivityIndicator size="large" color="#0000cc" />
     </View>
   );
 }

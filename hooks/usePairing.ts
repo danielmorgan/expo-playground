@@ -43,6 +43,33 @@ export function usePairing() {
     }
   };
 
+  const unpair = async () => {
+    if (!deviceCode) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      console.log('Unpairing device with code:', deviceCode);
+
+      const { error } = await supabase
+        .from('pairs')
+        .delete()
+        .or(`master_code.eq.${deviceCode},slave_code.eq.${deviceCode}`);
+
+      if (error) {
+        throw new Error(`Failed to unpair: ${error.message}`);
+      }
+
+      setCurrentPair(null);
+    } catch (err) {
+      console.error(err);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -65,5 +92,5 @@ export function usePairing() {
     })();
   }, [deviceCode]);
 
-  return { initializePair, currentPair, loading, error };
+  return { initializePair, unpair, currentPair, loading, error };
 }

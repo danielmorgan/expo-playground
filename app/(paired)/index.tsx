@@ -1,8 +1,14 @@
-import { Platform, StyleSheet, Text, View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { usePairing } from "@/hooks/usePairing";
+import { router } from "expo-router";
 
 export default function Index() {
-  const { currentPair } = usePairing();
+  const { currentPair, unpair, loading } = usePairing();
+
+  const handlePress = async () => {
+    await unpair();
+    router.replace("/(unpaired)");
+  }
 
   return (
     <View
@@ -16,6 +22,16 @@ export default function Index() {
     >
       <Text style={styles.title}>Paired with:</Text>
       <Text style={styles.title}>{currentPair}</Text>
+
+      <View style={{ flexDirection: "row", marginTop: 16 }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handlePress}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>Unpair</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }

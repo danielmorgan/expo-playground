@@ -1,10 +1,10 @@
 import { ActivityIndicator, View } from "react-native";
 
 export interface IndexProps {
-  prop: string;
 }
 
-export default function Index({ prop }: IndexProps) {
+export default function Index({}: IndexProps) {
+  console.log('/(app)/index');
   return (
     <View
       style={{

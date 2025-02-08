@@ -17,7 +17,6 @@ export default function Scan() {
       for (const code of codes) {
         if (code.value) {
           const parsed = Linking.parse(code.value);
-          console.log(parsed);
           if (parsed.scheme == "com.ruledan.lovenudge") {
             Linking.openURL(code.value);
           }

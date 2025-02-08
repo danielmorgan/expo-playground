@@ -1,9 +1,8 @@
-// pair.tsx
 import { useDeviceCode } from "@/hooks/useDeviceCode";
-import { usePairing } from "@/hooks/usePairing";
+import { usePairing } from "@/ctx/PairingContext";
 import { router } from "expo-router";
 import { useLocalSearchParams } from "expo-router/build/hooks";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   ActivityIndicator,
   StyleSheet,
@@ -26,7 +25,6 @@ export default function Index() {
   const handlePress = async () => {
     if (inputCode && localCode) {
       await initializePair(inputCode, localCode);
-      router.replace("/(paired)");
     }
   };
 

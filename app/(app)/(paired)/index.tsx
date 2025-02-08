@@ -1,9 +1,11 @@
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { usePairing } from "@/hooks/usePairing";
 import { router } from "expo-router";
+import { useDeviceCode } from "@/hooks/useDeviceCode";
+import { usePairing } from "@/ctx/PairingContext";
 
 export default function Index() {
   const { currentPair, unpair, loading } = usePairing();
+  const { deviceCode } = useDeviceCode();
 
   const handlePress = async () => {
     await unpair();
@@ -15,13 +17,12 @@ export default function Index() {
       style={{
         flex: 1,
         justifyContent: "flex-start",
-        alignItems: "center",
         paddingTop: 30,
         paddingHorizontal: 16,
       }}
     >
-      <Text style={styles.title}>Paired with:</Text>
-      <Text style={styles.title}>{currentPair}</Text>
+      <Text style={styles.title}>Device Code: {deviceCode}</Text>
+      <Text>{JSON.stringify(currentPair, null, 2)}</Text>
 
       <View style={{ flexDirection: "row", marginTop: 16 }}>
         <TouchableOpacity

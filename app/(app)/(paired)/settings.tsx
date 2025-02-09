@@ -13,8 +13,7 @@ export default function Settings({}: SettingsProps) {
 
   return (
     <View style={styles.container}>
-
-      <View style={{ flexDirection: "row", marginTop: 16 }}>
+      <View style={{ flexDirection: "row" }}>
         <TouchableOpacity
           style={styles.button}
           onPress={handlePress}
@@ -29,9 +28,8 @@ export default function Settings({}: SettingsProps) {
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
     padding: 20,
-    alignItems: "center",
-    justifyContent: "center",
   },
   button: {
     flex: 1,

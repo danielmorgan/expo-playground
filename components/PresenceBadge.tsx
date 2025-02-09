@@ -65,15 +65,15 @@ export function PresenceBadge() {
     if (pairStatus?.isOnline) {
       const pulse = Animated.sequence([
         Animated.timing(pulseAnim, {
-          toValue: 1.8,
-          duration: 400,
-          easing: Easing.elastic(3),
+          toValue: 1.6,
+          duration: 1000,
+          easing: Easing.out(Easing.cubic),
           useNativeDriver: true,
         }),
         Animated.timing(pulseAnim, {
-          toValue: 1.2,
-          duration: 1200,
-          easing: Easing.in(Easing.quad),
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.in(Easing.cubic),
           useNativeDriver: true,
         }),
       ]);
@@ -132,15 +132,15 @@ const styles = StyleSheet.create({
     marginRight: 2,
   },
   dot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 11,
+    height: 11,
+    borderRadius: '100%',
     position: 'absolute',
   },
   dotPulse: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 11,
+    height: 11,
+    borderRadius: '100%',
     position: 'absolute',
   },
   deviceCode: {

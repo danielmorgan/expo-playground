@@ -77,7 +77,7 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
       return;
     }
 
-    console.log("Initializing presence channel for pair:", currentPair.id);
+    console.log("Initializing presence channel", `pair:${currentPair.id}`);
 
     const presenceChannel = supabase.channel(`pair:${currentPair.id}`, {
       config: {
@@ -89,7 +89,6 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
 
     const updatePairStatus = () => {
       const state = presenceChannel.presenceState();
-      console.log("Presence state updated:", state);
 
       const otherDevice = Object.entries(state).find(
         ([key]) => key !== deviceCode
@@ -112,7 +111,6 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
 
     presenceChannel
       .on("presence", { event: "sync" }, () => {
-        console.log("Presence sync");
         updatePairStatus();
       })
       .on("presence", { event: "join" }, ({ key }) => {
@@ -124,8 +122,6 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
         updatePairStatus();
       })
       .subscribe(async (status) => {
-        console.log("Channel status:", status);
-        
         if (status === "SUBSCRIBED" && AppState.currentState === 'active') {
           setIsConnected(true);
           await presenceChannel.track({
@@ -141,7 +137,7 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
     return () => {
       console.log("Cleaning up presence channel");
       presenceChannel.untrack().then(() => {
-        presenceChannel.unsubscribe();
+        supabase.removeChannel(presenceChannel);
       });
       setChannel(null);
       setIsConnected(false);

@@ -7,7 +7,7 @@ export default function PairedLayout() {
   return (
     <PairPresenceProvider>
       <View style={{ flex: 1 }}>
-        <View style={{ paddingTop: 12, paddingHorizontal: 12 }}>
+        <View style={{ alignItems: "flex-end", paddingTop: 20, paddingHorizontal: 20 }}>
           <PresenceBadge />
         </View>
 
@@ -16,6 +16,6 @@ export default function PairedLayout() {
           <Tabs.Screen name="settings" options={{ title: "Settings" }} />
         </Tabs>
       </View>
-    </PairPresenceProvider>
+    </PairPresenceProvider >
   );
 }

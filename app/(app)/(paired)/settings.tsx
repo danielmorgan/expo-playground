@@ -1,13 +1,28 @@
-import { StyleSheet, Text, View } from "react-native";
+import { useDeviceCode } from "@/hooks/useDeviceCode";
+import { usePairing } from "@/hooks/usePairing";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface SettingsProps {
-  prop: string;
 }
 
-export default function Settings({ prop }: SettingsProps) {
+export default function Settings({}: SettingsProps) {
+  const { unpair, loading } = usePairing();
+  const handlePress = async () => {
+    await unpair();
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Settings</Text>
+
+      <View style={{ flexDirection: "row", marginTop: 16 }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={handlePress}
+          disabled={loading}
+        >
+          <Text style={styles.buttonText}>Unpair</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -17,5 +32,20 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
+  },
+  button: {
+    flex: 1,
+    borderRadius: 8,
+    padding: 16,
+    backgroundColor: "#fff",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+  },
+  buttonText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });

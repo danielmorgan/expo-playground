@@ -3,9 +3,11 @@ import { useDeviceCode } from "@/hooks/useDeviceCode";
 import { usePairing } from "@/ctx/PairingContext";
 import { useEffect, useMemo, useState } from "react";
 import { useSupabaseChannel } from "@/hooks/useSupabaseChannel";
-import Animated, { clamp, Easing, interpolate, ReduceMotion, runOnJS, SharedValue, useAnimatedProps, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { clamp, Easing, interpolate, ReduceMotion, runOnJS, useAnimatedReaction, useAnimatedStyle, useDerivedValue, useSharedValue, withTiming } from "react-native-reanimated";
 import Meter from "@/components/Meter";
 import { ReText } from "react-native-redash";
+import AnimatedBackground from "@/components/AnimatedBackground";
+import { PresenceBadge } from "@/components/PresenceBadge";
 
 const FILL_DURATION = 3000;
 const DRAIN_DURATION = 2000;
@@ -107,49 +109,59 @@ export default function Index() {
   });
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Device Code: {deviceCode}</Text>
-      <Text>{JSON.stringify(currentPair, null, 2)}</Text>
+    <>
+      <AnimatedBackground localProgress={localMeterProgress} remoteProgress={remoteMeterProgress} />
 
-      <View style={styles.buttonContainer}>
-        <Pressable
-          onPressIn={() => setLocalPressed(true)}
-          onPressOut={() => setLocalPressed(false)}
-          style={{ position: 'absolute', zIndex: 20 }}
-        >
-          <Animated.View
-            style={[
-              styles.button,
-              isMaster ? { backgroundColor: '#3020d5' } : { backgroundColor: '#ed1e4e' },
-              animatedButtonStyles
-            ]}
-          >
-            <ReText
-              text={percentageText}
-              style={styles.percentage}
+      <View style={styles.container}>
+        <View style={{ alignItems: "center" }}>
+          <PresenceBadge />
+        </View>
+
+        {/* <Text style={styles.title}>Device Code: {deviceCode}</Text>
+        <Text>{JSON.stringify(currentPair, null, 2)}</Text> */}
+
+        <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+          <View style={styles.metersContainer}>
+            <Meter
+              progress={isMaster ? localMeterProgress : remoteMeterProgress}
+              colors={GRADIENT_MASTER}
             />
-          </Animated.View>
-        </Pressable>
+            <Meter
+              progress={!isMaster ? localMeterProgress : remoteMeterProgress}
+              colors={GRADIENT_SLAVE}
+              flipped
+            />
+          </View>
 
-        <View style={[
-          styles.buttonShadow,
-          isMaster ? { backgroundColor: '#06005c' } : { backgroundColor: '#b8062f' }
-        ]} />
+          <View style={styles.buttonContainer}>
+            <Pressable
+              onPressIn={() => setLocalPressed(true)}
+              onPressOut={() => setLocalPressed(false)}
+              style={{ position: 'absolute', zIndex: 20 }}
+            >
+              <Animated.View
+                style={[
+                  styles.button,
+                  isMaster ? { backgroundColor: '#3020d5' } : { backgroundColor: '#ed1e4e' },
+                  animatedButtonStyles
+                ]}
+              >
+                <ReText
+                  text={percentageText}
+                  style={styles.percentage}
+                />
+              </Animated.View>
+            </Pressable>
+
+            <View style={[
+              styles.buttonShadow,
+              isMaster ? { backgroundColor: '#06005c' } : { backgroundColor: '#b8062f' }
+            ]} />
+          </View>
+        </View>
+
       </View>
-
-      <View style={styles.metersContainer}>
-        <Meter
-          progress={isMaster ? localMeterProgress : remoteMeterProgress}
-          colors={GRADIENT_MASTER}
-        />
-        <Meter
-          progress={!isMaster ? localMeterProgress : remoteMeterProgress}
-          colors={GRADIENT_SLAVE}
-          flipped
-        />
-      </View>
-
-    </View>
+    </>
   );
 }
 
@@ -157,6 +169,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 20,
@@ -170,6 +183,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignSelf: 'center',
     aspectRatio: 1,
+    marginVertical: 30,
   },
   buttonShadow: {
     position: 'absolute',

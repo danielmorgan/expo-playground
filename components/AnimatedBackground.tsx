@@ -1,23 +1,68 @@
-import { Canvas, Circle, Group } from "@shopify/react-native-skia";
+import { usePairing } from "@/ctx/PairingContext";
+import { hexagon } from "@/lib/paths";
 import {
-  SharedValue,
-  useDerivedValue,
-  useSharedValue,
-} from "react-native-reanimated";
+  BlurMask,
+  Canvas,
+  Group,
+  Path,
+  RadialGradient,
+  vec,
+} from "@shopify/react-native-skia";
+import { Dimensions } from "react-native";
+import { SharedValue, useDerivedValue, useSharedValue } from "react-native-reanimated";
+import { clamp, mixColor } from "react-native-redash";
+
+const HEXAGON_SIZE = 75;
+const PADDING = 20;
+const BLUR_MIN = 10;
+const BLUR_MULTIPLIER = 20;
 
 interface Props {
   localProgress: SharedValue<number>;
   remoteProgress: SharedValue<number>;
+  complete: SharedValue<boolean>;
 }
 
 export default function AnimatedBackground({
   localProgress,
   remoteProgress,
+  complete,
 }: Props) {
-  const size = 300;
-  const r = useSharedValue(120);
-  const rot = useSharedValue(0);
-  const c = useDerivedValue(() => size - r.value);
+  const { width } = Dimensions.get("screen");
+
+  const { isMaster } = usePairing();
+  const masterTransform = useDerivedValue(() => {
+    const z = isMaster ? localProgress.value : remoteProgress.value;
+    return [{ rotateZ: z * Math.PI }];
+  });
+  const slaveTransform = useDerivedValue(() => {
+    const z = !isMaster ? localProgress.value : remoteProgress.value;
+    return [{ rotateZ: -z * Math.PI }];
+  });
+  const masterGradient = useDerivedValue(() => {
+    if (complete.value) return ["#fff"];
+    const p = isMaster ? localProgress.value : remoteProgress.value;
+    const color = mixColor(p, "#3020d5", "#ff8400", "HSV");
+    return [mixColor(0.3, color, "white"), color];
+  });
+  const slaveGradient = useDerivedValue(() => {
+    if (complete.value) return ["#fff"];
+    const p = !isMaster ? localProgress.value : remoteProgress.value;
+    const color = mixColor(p, "#ed1e4e", "#ff8000", "HSV");
+    return [mixColor(0.3, color, "white"), color];
+  });
+  const masterBlur = useDerivedValue(() =>
+    isMaster
+      ? clamp(BLUR_MULTIPLIER - localProgress.value * BLUR_MULTIPLIER, BLUR_MIN, BLUR_MULTIPLIER)
+      : clamp(BLUR_MULTIPLIER - remoteProgress.value * BLUR_MULTIPLIER, BLUR_MIN, BLUR_MULTIPLIER)
+  );
+  const slaveBlur = useDerivedValue(() =>
+    !isMaster
+      ? clamp(BLUR_MULTIPLIER - localProgress.value * BLUR_MULTIPLIER, BLUR_MIN, BLUR_MULTIPLIER)
+      : clamp(BLUR_MULTIPLIER - remoteProgress.value * BLUR_MULTIPLIER, BLUR_MIN, BLUR_MULTIPLIER)
+  );
+
+  const hex = useSharedValue(hexagon(vec(0, 0), HEXAGON_SIZE));
 
   return (
     <Canvas
@@ -31,18 +76,35 @@ export default function AnimatedBackground({
         backgroundColor: "#223",
       }}
     >
-      <Group
-        blendMode="multiply"
-        transform={[
-          { translateX: 78 },
-          { translateY: 408 },
-          { rotateZ: rot.value },
-        ]}
-        origin={{ x: size / 3, y: size / 2 }}
-      >
-        <Circle cx={r} cy={r} r={r} color="cyan" opacity={1} />
-        <Circle cx={c} cy={r} r={r} color="magenta" opacity={1} />
-        <Circle cx={size / 2} cy={c} r={r} color="yellow" opacity={1} />
+      <Group transform={[{ translateY: 200 }]}>
+        <Group transform={[{ translateX: width / 2 - HEXAGON_SIZE - PADDING }]}>
+          <BlurMask blur={masterBlur} style="normal" />
+          <Path
+            path={hexagon(vec(0, 0), HEXAGON_SIZE)}
+            transform={masterTransform}
+          >
+            <RadialGradient
+              c={vec(0, 0)}
+              r={HEXAGON_SIZE}
+              colors={masterGradient}
+            />
+          </Path>
+        </Group>
+
+        <Group transform={[{ translateX: width / 2 + HEXAGON_SIZE + PADDING }]}>
+          <BlurMask blur={slaveBlur} style="normal" />
+          <Path
+            path={hex}
+            strokeWidth={3}
+            transform={slaveTransform}
+          >
+          <RadialGradient
+            c={vec(0, 0)}
+            r={HEXAGON_SIZE}
+            colors={slaveGradient}
+          />
+          </Path>
+        </Group>
       </Group>
     </Canvas>
   );

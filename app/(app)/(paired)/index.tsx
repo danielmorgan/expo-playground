@@ -1,7 +1,6 @@
-import { Pressable, StyleSheet, View } from "react-native";
-import { useDeviceCode } from "@/hooks/useDeviceCode";
+import { Pressable, StyleSheet, Vibration, View } from "react-native";
 import { usePairing } from "@/ctx/PairingContext";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSupabaseChannel } from "@/hooks/useSupabaseChannel";
 import Animated, {
   clamp,
@@ -23,20 +22,16 @@ import { PresenceBadge } from "@/components/PresenceBadge";
 const FILL_DURATION = 3000;
 const DRAIN_DURATION = 2000;
 const FILL_EASING = Easing.bezier(0.25, 0.1, 0.25, 1);
-const DRAIN_EASING = Easing.bezier(0.42, 0, 1, 1);
+const DRAIN_EASING = Easing.elastic(1);
 const GRADIENT_MASTER = ["#1e18d3", "#3020d5", "#ae20cf", "#ff49c9", "#ff8400"];
 const GRADIENT_SLAVE = ["#ff8000", "#ff453a", "#ed1e4e", "#bb1e66", "#74175d"];
 
 export default function Index() {
-  const { currentPair } = usePairing();
-  const { deviceCode } = useDeviceCode();
+  const { currentPair, isMaster } = usePairing();
   const [localPressed, setLocalPressed] = useState(false);
   const [remotePressed, setRemotePressed] = useState(false);
-  const [complete, setComplete] = useState(false);
-  const isMaster = useMemo(() => {
-    return currentPair?.master_code === deviceCode;
-  }, [currentPair, deviceCode]);
 
+  const complete = useSharedValue(false);
   const localMeterProgress = useSharedValue(0);
   const remoteMeterProgress = useSharedValue(0);
   const buttonPressProgress = useSharedValue(0);
@@ -106,7 +101,10 @@ export default function Index() {
       return localMeterProgress.value + remoteMeterProgress.value;
     },
     (currentValue) => {
-      runOnJS(setComplete)(currentValue >= 2);
+      if (localPressed) {
+        runOnJS(Vibration.vibrate)(clamp(3 * currentValue, 1, 1000));
+      }
+      complete.value = currentValue >= 2;
     },
   );
 
@@ -115,7 +113,7 @@ export default function Index() {
       localMeterProgress.value / 2 + remoteMeterProgress.value / 2;
     const clampedCombinedProgress = clamp(combinedProgress, 0, 1);
 
-    if (localMeterProgress.value === 0) {
+    if (localMeterProgress.value < 0.01) {
       return "Power up";
     }
 
@@ -127,6 +125,7 @@ export default function Index() {
       <AnimatedBackground
         localProgress={localMeterProgress}
         remoteProgress={remoteMeterProgress}
+        complete={complete}
       />
 
       <View style={styles.container}>
@@ -134,11 +133,8 @@ export default function Index() {
           <PresenceBadge />
         </View>
 
-        {/* <Text style={styles.title}>Device Code: {deviceCode}</Text>
-        <Text>{JSON.stringify(currentPair, null, 2)}</Text> */}
-
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
-          <View style={styles.metersContainer}>
+          {/* <View style={styles.metersContainer}>
             <Meter
               progress={isMaster ? localMeterProgress : remoteMeterProgress}
               colors={GRADIENT_MASTER}
@@ -148,7 +144,7 @@ export default function Index() {
               colors={GRADIENT_SLAVE}
               flipped
             />
-          </View>
+          </View> */}
 
           <View style={styles.buttonContainer}>
             <Pressable

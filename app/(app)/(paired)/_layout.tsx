@@ -1,4 +1,3 @@
-import { PresenceBadge } from "@/components/PresenceBadge";
 import { PairPresenceProvider } from "@/ctx/PairPresenceContext";
 import { Tabs } from "expo-router";
 import { View } from "react-native";

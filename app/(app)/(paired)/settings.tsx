@@ -1,5 +1,4 @@
-import { useDeviceCode } from "@/hooks/useDeviceCode";
-import { usePairing } from "@/hooks/usePairing";
+import { usePairing } from "@/ctx/PairingContext";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export interface SettingsProps {

@@ -1,22 +1,23 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
-import { useDeviceCode } from '@/hooks/useDeviceCode';
-import { RealtimeChannel } from '@supabase/supabase-js';
+import { useDeviceCode } from "@/hooks/useDeviceCode";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 type Pair = {
   id: string;
   master_code: string;
   slave_code: string;
   created_at: string;
-}
+};
 
 type PairingContextType = {
   currentPair: Pair | null;
+  isMaster: boolean;
   loading: boolean;
   error: string | null;
   initializePair: (remoteCode: string, localCode: string) => Promise<void>;
   unpair: () => Promise<void>;
-}
+};
 
 const PairingContext = createContext<PairingContextType | null>(null);
 
@@ -33,48 +34,48 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
 
     if (!channel) {
       const newChannel = supabase
-        .channel('pairs-channel')
+        .channel("pairs-channel")
         // Listen for master_code changes
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'pairs',
+            event: "INSERT",
+            schema: "public",
+            table: "pairs",
             filter: `master_code=eq.${deviceCode}`,
           },
           (payload) => {
-            console.log('Master code change:', payload);
+            console.log("Master code change:", payload);
             setCurrentPair(payload.new as Pair);
-          }
+          },
         )
         // Listen for slave_code changes
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'pairs',
+            event: "INSERT",
+            schema: "public",
+            table: "pairs",
             filter: `slave_code=eq.${deviceCode}`,
           },
           (payload) => {
-            console.log('Slave code change:', payload);
+            console.log("Slave code change:", payload);
             setCurrentPair(payload.new as Pair);
-          }
+          },
         )
         // Listen for slave_code changes
         .on(
-          'postgres_changes',
+          "postgres_changes",
           {
-            event: 'DELETE',
-            schema: 'public',
-            tatble: 'pairs',
+            event: "DELETE",
+            schema: "public",
+            tatble: "pairs",
             filter: `id=eq.${currentPair?.id}`,
           },
           (payload) => {
-            console.log('PAIR DELETED', payload);
+            console.log("PAIR DELETED", payload);
             setCurrentPair(null);
-          }
+          },
         );
 
       newChannel.subscribe();
@@ -96,15 +97,15 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     (async () => {
       if (!deviceCode) return;
-      
+
       setLoading(true);
-    
+
       const { data, error } = await supabase
         .from("pairs")
         .select()
         .or(`slave_code.eq.${deviceCode},master_code.eq.${deviceCode}`)
         .single();
-      
+
       if (deviceCode === data?.master_code || deviceCode === data?.slave_code) {
         setCurrentPair(data);
       } else {
@@ -126,7 +127,7 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
         .select()
         .eq("master_code", remoteCode)
         .single();
-      
+
       if (existingPair) {
         console.log("Pair already exists", existingPair);
         await supabase
@@ -141,10 +142,12 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
           master_code: remoteCode,
           slave_code: localCode,
         });
-      }    
+      }
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
     } finally {
       setLoading(false);
     }
@@ -160,9 +163,9 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
       console.log(`[${deviceCode}] Unpairing device with code:`, deviceCode);
 
       const { error } = await supabase
-        .from('pairs')
+        .from("pairs")
         .delete()
-        .eq('id', currentPair.id);
+        .eq("id", currentPair.id);
 
       if (error) {
         throw new Error(`Failed to unpair: ${error.message}`);
@@ -171,20 +174,27 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
       // setCurrentPair(null);
     } catch (err) {
       console.error(err);
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  const isMaster = useMemo(() => {
+    return currentPair?.master_code === deviceCode;
+  }, [currentPair, deviceCode]);
+
   return (
-    <PairingContext.Provider 
-      value={{ 
-        currentPair, 
-        loading, 
-        error, 
-        initializePair, 
-        unpair 
+    <PairingContext.Provider
+      value={{
+        currentPair,
+        isMaster,
+        loading,
+        error,
+        initializePair,
+        unpair,
       }}
     >
       {children}
@@ -196,7 +206,7 @@ export function PairingProvider({ children }: { children: React.ReactNode }) {
 export function usePairing() {
   const context = useContext(PairingContext);
   if (!context) {
-    throw new Error('usePairing must be used within a PairingProvider');
+    throw new Error("usePairing must be used within a PairingProvider");
   }
   return context;
 }

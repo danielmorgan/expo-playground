@@ -1,0 +1,7 @@
+export default {
+  MASTER_PRIMARY: "#3744D5",
+  MASTER_SHADOW: "#261DA3",
+  SLAVE_PRIMARY: "#ed1e4e",
+  SLAVE_SHADOW: "#b8062f",
+  MIDPOINT_PRIMARY: "#11343C"
+};

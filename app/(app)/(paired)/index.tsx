@@ -18,13 +18,14 @@ import Meter from "@/components/Meter";
 import { ReText } from "react-native-redash";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import { PresenceBadge } from "@/components/PresenceBadge";
+import colors from "@/lib/colors";
 
 const FILL_DURATION = 3000;
 const DRAIN_DURATION = 2000;
 const FILL_EASING = Easing.bezier(0.25, 0.1, 0.25, 1);
 const DRAIN_EASING = Easing.elastic(1);
-const GRADIENT_MASTER = ["#1e18d3", "#3020d5", "#ae20cf", "#ff49c9", "#ff8400"];
-const GRADIENT_SLAVE = ["#ff8000", "#ff453a", "#ed1e4e", "#bb1e66", "#74175d"];
+const GRADIENT_MASTER = [colors.MASTER_PRIMARY, colors.SLAVE_PRIMARY];
+const GRADIENT_SLAVE = [colors.SLAVE_PRIMARY, colors.MASTER_PRIMARY];
 
 export default function Index() {
   const { currentPair, isMaster } = usePairing();
@@ -129,10 +130,6 @@ export default function Index() {
       />
 
       <View style={styles.container}>
-        <View style={{ alignItems: "center" }}>
-          <PresenceBadge />
-        </View>
-
         <View style={{ flex: 1, justifyContent: "flex-end" }}>
           {/* <View style={styles.metersContainer}>
             <Meter
@@ -156,8 +153,8 @@ export default function Index() {
                 style={[
                   styles.button,
                   isMaster
-                    ? { backgroundColor: "#3020d5" }
-                    : { backgroundColor: "#ed1e4e" },
+                    ? { backgroundColor: colors.MASTER_PRIMARY }
+                    : { backgroundColor: colors.SLAVE_PRIMARY },
                   animatedButtonStyles,
                 ]}
               >
@@ -169,11 +166,15 @@ export default function Index() {
               style={[
                 styles.buttonShadow,
                 isMaster
-                  ? { backgroundColor: "#06005c" }
-                  : { backgroundColor: "#b8062f" },
+                  ? { backgroundColor: colors.MASTER_SHADOW }
+                  : { backgroundColor: colors.SLAVE_SHADOW },
               ]}
             />
           </View>
+        </View>
+        
+        <View style={{ alignItems: "center" }}>
+          <PresenceBadge />
         </View>
       </View>
     </>

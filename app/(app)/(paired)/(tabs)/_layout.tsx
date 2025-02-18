@@ -66,6 +66,15 @@ export default function PairedTabsLayout() {
             }}
           />
           <Tabs.Screen
+            name="counter"
+            options={{
+              title: "Counter",
+              tabBarIcon: ({ color }) => (
+                <FontAwesome size={24} name="calculator" color={color} />
+              ),
+            }}
+          />
+          <Tabs.Screen
             name="settings"
             options={{
               title: "Settings",

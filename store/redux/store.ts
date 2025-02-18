@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./redux/counterSlice";
+import counterReducer from "./counterSlice";
 import devToolsEnhancer from "redux-devtools-expo-dev-plugin";
 
 export default configureStore({

@@ -1,6 +1,34 @@
-import { create } from "zustand";
+import { create, StateCreator, StoreMutatorIdentifier } from "zustand";
 import { Product } from "./interfaces";
-import { devtools } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { zustandStorage } from "./mmkv";
+
+type Logger = <
+  T extends unknown,
+  Mps extends [StoreMutatorIdentifier, unknown][] = [],
+  Mcs extends [StoreMutatorIdentifier, unknown][] = [],
+>(
+  f: StateCreator<T, Mps, Mcs>,
+  name?: string,
+) => StateCreator<T, Mps, Mcs>;
+
+type LoggerImpl = <T extends unknown>(
+  f: StateCreator<T, [], []>,
+  name?: string,
+) => StateCreator<T, [], []>;
+
+const loggerImpl: LoggerImpl = (f, name) => (set, get, store) => {
+  type T = ReturnType<typeof f>;
+  const loggedSet: typeof set = (...a) => {
+    set(...a);
+    console.log(...(name ? [`${name}:`] : []), get());
+  };
+  store.setState = loggedSet;
+
+  return f(loggedSet, get, store);
+};
+
+export const logger = loggerImpl as unknown as Logger;
 
 interface CartState {
   products: (Product & { quantity: number })[];
@@ -12,8 +40,8 @@ interface CartState {
 }
 
 const useCartStore = create<CartState>()(
-  devtools(
-    (set, get) => ({
+  persist(
+    logger((set, get) => ({
       products: [],
 
       addProduct: (product: Product) =>
@@ -60,8 +88,11 @@ const useCartStore = create<CartState>()(
 
       total: () =>
         get().products.reduce((acc, p) => acc + p.price * p.quantity, 0),
-    }),
-    { name: "my Store", enabled: true, serialize: { options: true } },
+    })),
+    {
+      name: "cart",
+      storage: createJSONStorage(() => zustandStorage),
+    },
   ),
 );
 

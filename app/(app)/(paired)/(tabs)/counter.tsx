@@ -3,8 +3,8 @@ import { Button, StyleSheet, Text, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 
 export default function Counter() {
-  // const count = useSelector((state) => state.counter.value);
-  // const dispatch = useDispatch();
+  const count = useSelector((state) => state.counter.value);
+  const dispatch = useDispatch();
 
   return (
     <View style={styles.container}>
@@ -16,9 +16,9 @@ export default function Counter() {
           gap: 10,
         }}
       >
-        {/* <Button title="-" onPress={() => dispatch(decrement())} />
+        <Button title="-" onPress={() => dispatch(decrement())} />
         <Text style={{ fontSize: 16 }}>{count}</Text>
-        <Button title="+" onPress={() => dispatch(increment())} /> */}
+        <Button title="+" onPress={() => dispatch(increment())} />
       </View>
     </View>
   );

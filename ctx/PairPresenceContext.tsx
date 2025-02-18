@@ -114,15 +114,13 @@ export function PairPresenceProvider({ children }: { children: React.ReactNode }
         updatePairStatus();
       })
       .on("presence", { event: "join" }, ({ key }) => {
-        console.log("Presence join:", key);
         updatePairStatus();
       })
       .on("presence", { event: "leave" }, ({ key }) => {
-        console.log("Presence leave:", key);
         updatePairStatus();
       })
       .subscribe(async (status) => {
-        if (status === "SUBSCRIBED" && AppState.currentState === 'active') {
+        if (status === "SUBSCRIBED" && AppState.currentState === "active") {
           setIsConnected(true);
           await presenceChannel.track({
             timestamp: new Date().toISOString(),

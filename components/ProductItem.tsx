@@ -1,16 +1,20 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Product } from "@/store/interfaces";
-import useCartStore from "@/store/cartStore";
+import { Product } from "@/store/redux/interfaces";
 
 interface ProductItemProps {
   item: Product & { quantity?: number };
   showQuantity?: boolean;
+  addProduct: (item: Product) => void;
+  reduceProduct: (item: Product) => void;
 }
 
-export default function ProductItem({ item, showQuantity }: ProductItemProps) {
-  const { addProduct, reduceProduct } = useCartStore();
-
+export default function ProductItem({
+  item,
+  showQuantity,
+  addProduct,
+  reduceProduct,
+}: ProductItemProps) {
   return (
     <View style={styles.cartItemContainer}>
       <View style={styles.cartItemDetail}>

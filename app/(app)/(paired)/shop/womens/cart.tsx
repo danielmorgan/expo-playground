@@ -1,7 +1,7 @@
 import { Button, FlatList, StyleSheet, Text } from "react-native";
-import useCartStore from "@/store/cartStore";
+import useCartStore from "@/store/redux/cartStore";
 import { SafeAreaView } from "react-native-safe-area-context";
-import ProductItem from "../components/ProductItem";
+import ProductItem from "@/components/ProductItem";
 
 export default function CartModal() {
   const { products, total, clearCart } = useCartStore();
@@ -11,7 +11,12 @@ export default function CartModal() {
       <FlatList
         data={products}
         renderItem={({ item }) => (
-          <ProductItem item={item} showQuantity={true} />
+          <ProductItem
+            item={item}
+            showQuantity={true}
+            addProduct={() => console.log("add")}
+            reduceProduct={() => console.log("reduce")}
+          />
         )}
         keyExtractor={(item) => item.id.toString()}
         style={{ paddingTop: 16 }}

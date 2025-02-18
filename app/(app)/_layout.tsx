@@ -14,7 +14,7 @@ export default function AppLayout() {
     if (!currentPair) {
       router.replace("/(app)/(unpaired)");
     } else {
-      router.replace("/(app)/(paired)/(tabs)/products");
+      router.replace("/(app)/(paired)/shop/mens");
     }
   }, [currentPair, loading, rootNavigationState?.key, router]);
 

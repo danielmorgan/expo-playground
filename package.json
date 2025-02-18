@@ -9,7 +9,9 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "wsl:lan:start": "export env REACT_NATIVE_PACKAGER_HOSTNAME=$(powershell.exe -executionpolicy bypass -File wsl-get-lan-ip.ps1) && yarn wsl:port-forward && yarn start",
+    "wsl:port-forward": "powershell.exe -executionpolicy bypass -File wsl-port-forward.ps1"
   },
   "jest": {
     "preset": "jest-expo"
@@ -38,6 +40,7 @@
     "expo-system-ui": "~4.0.7",
     "expo-web-browser": "~14.0.2",
     "react": "18.3.1",
+    "react-devtools-core": "^6.1.1",
     "react-dom": "18.3.1",
     "react-native": "0.76.6",
     "react-native-gesture-handler": "~2.20.2",
@@ -50,6 +53,8 @@
     "react-native-vision-camera": "^4.6.3",
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
+    "redux-devtools-expo-dev-plugin": "^1.0.0",
+    "usehooks-ts": "^3.1.1",
     "zustand": "^5.0.3"
   },
   "devDependencies": {

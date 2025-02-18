@@ -12,3 +12,5 @@ interface Rating {
   rate: number;
   count: number;
 }
+
+export type CartItem = Product & { quantity: number };

@@ -1,5 +1,5 @@
 import { Button, FlatList, StyleSheet, Text } from "react-native";
-import useCartStore from "@/store/redux/cartStore";
+import useCartStore from "@/store/zustand/cartStore";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ProductItem from "@/components/ProductItem";
 

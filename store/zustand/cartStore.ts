@@ -1,5 +1,5 @@
 import { create, StateCreator, StoreMutatorIdentifier } from "zustand";
-import { Product } from "./interfaces";
+import { CartItem, Product } from "../interfaces";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { zustandStorage } from "./mmkv";
 
@@ -31,7 +31,7 @@ const loggerImpl: LoggerImpl = (f, name) => (set, get, store) => {
 export const logger = loggerImpl as unknown as Logger;
 
 interface CartState {
-  products: (Product & { quantity: number })[];
+  products: CartItem[];
   addProduct: (product: Product) => void;
   reduceProduct: (product: Product) => void;
   clearCart: () => void;

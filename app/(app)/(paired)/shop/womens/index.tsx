@@ -1,8 +1,13 @@
 import { FlatList, StyleSheet, View } from "react-native";
 import data from "@/assets/data.json";
 import ProductItem from "@/components/ProductItem";
+import { useAtom } from "jotai";
+import { addToCartAtom, removeFromCartAtom } from "@/store/jotai/cartStore";
 
-export default function MensClothing() {
+export default function WomensClothing() {
+  const [, add] = useAtom(addToCartAtom);
+  const [, remove] = useAtom(removeFromCartAtom);
+
   return (
     <View style={styles.container}>
       <FlatList
@@ -10,9 +15,9 @@ export default function MensClothing() {
         renderItem={({ item }) => (
           <ProductItem
             item={item}
-            showQuantity={true}
-            addProduct={() => console.log("add1")}
-            reduceProduct={() => console.log("reduce1")}
+            showQuantity={false}
+            addProduct={add}
+            reduceProduct={remove}
           />
         )}
         keyExtractor={(item) => item.id.toString()}

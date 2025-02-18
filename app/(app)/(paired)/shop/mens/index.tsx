@@ -1,7 +1,7 @@
 import { FlatList, StyleSheet, View } from "react-native";
 import data from "@/assets/data.json";
 import ProductItem from "@/components/ProductItem";
-import useCartStore from "@/store/redux/cartStore";
+import useCartStore from "@/store/zustand/cartStore";
 
 export default function MensClothing() {
   const { addProduct, reduceProduct } = useCartStore();

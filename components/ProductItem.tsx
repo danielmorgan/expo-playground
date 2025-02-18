@@ -1,6 +1,6 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { Product } from "@/store/redux/interfaces";
+import { Product } from "@/store/interfaces";
 
 interface ProductItemProps {
   item: Product & { quantity?: number };
